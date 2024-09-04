@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+.Toastify__toast-container--top-left {
+  top: var(--toastify-toast-top);
+  left: var(--toastify-toast-left);
+}
