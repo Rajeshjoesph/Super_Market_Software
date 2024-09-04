@@ -139,6 +139,7 @@ const PurchaseEntry = () => {
       }
     }
   };
+
   const fetchItemCodeSuggent = async (query) => {
     if (query.length > 1) {
       try {
@@ -155,7 +156,19 @@ const PurchaseEntry = () => {
       } catch (error) {
         console.error("Error fetching item codes:", error);
       }
+    } else {
+      setSuggentBox([]);
     }
+  };
+  const handleItemCodeSelect = (index, suggention) => {
+    const { itemCode, itemName, sellingRate, mrpPrices } = suggention;
+    const updatestockDetailList = [...stockDetail];
+    updatestockDetailList[index].itemCode = itemCode;
+    updatestockDetailList[index].itemName = itemName;
+    updatestockDetailList[index].sellingRate = sellingRate;
+    updatestockDetailList[index].mrpPrices = mrpPrices;
+    setstockDetail(updatestockDetailList);
+    setSuggentBox([]);
   };
 
   const handleSubmit = (e) => {
@@ -222,7 +235,7 @@ const PurchaseEntry = () => {
                 type="text"
                 name="supplyerName"
                 value={detail.supplyerName}
-                onChange={(e) => handleChange(e)}
+                onChange={(e) => handleChangeSupplyDtl(e)}
                 onFocus={() => setActive(null)}
                 className="w-full p-2 border border-gray-200 bg-white text-black rounded"
               />
@@ -314,15 +327,7 @@ const PurchaseEntry = () => {
                                   }}
                                   className="search-result flex  justify-between m-2"
                                   onClick={() => {
-                                    handleChange(index, {
-                                      target: {
-                                        // name: "itemCode",
-                                        value: suggention.itemCode,
-                                        // name: "itemName",
-                                        // value: suggention.itemName,
-                                      },
-                                    });
-                                    setSuggentBox([]);
+                                    handleItemCodeSelect(index, suggention);
                                   }}
                                 >
                                   <p>{suggention.itemCode}</p>
