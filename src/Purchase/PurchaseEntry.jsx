@@ -85,7 +85,7 @@ const PurchaseEntry = () => {
   const handleChangeSupplyDtl = (e) => {
     const { name, value } = e.target;
     setDetail({ ...detail, [name]: value });
-    fetchItemCodeSuggent(detail);
+    // fetchItemCodeSuggent(detail);
   };
 
   useEffect(() => {
@@ -126,18 +126,19 @@ const PurchaseEntry = () => {
       const gst = updatestockDetailList[index].gst || 0;
       const discountAmt = updatestockDetailList[index].discountAmt || 0;
       updatestockDetailList[index].netcost = qty * costPrices;
+      const gstAmt = (updatestockDetailList[index].netcost * gst) / 100;
       updatestockDetailList[index].amount =
-        updatestockDetailList[index].netcost * gst - discountAmt;
+        updatestockDetailList[index].netcost + gstAmt - discountAmt;
     }
 
-    if (index === stockDetail.length - 1) {
-      const lastItemField = Object.values(updatestockDetailList[index]).every(
-        (field) => field !== ""
-      );
-      if (lastItemField) {
-        setstockDetail([...stockDetail, initstate]);
-      }
+    // if (index === stockDetail.length - 1) {
+    const lastItemField = Object.values(updatestockDetailList[index]).every(
+      (field) => field !== ""
+    );
+    if (lastItemField && index === stockDetail.length - 1) {
+      setstockDetail([...stockDetail, initstate]);
     }
+    // }
   };
 
   const fetchItemCodeSuggent = async (query) => {
@@ -146,7 +147,6 @@ const PurchaseEntry = () => {
         const response = await axios.get("http://localhost:4000/openstock");
         const itemResult = response.data.data;
         const list = itemResult.filter((dbvalue) =>
-          // dbvalue.itemCode &&
           dbvalue.itemName
             .toString()
             .toLowerCase()
@@ -157,19 +157,22 @@ const PurchaseEntry = () => {
         console.error("Error fetching item codes:", error);
       }
     } else {
-      setSuggentBox([]);
+      setSuggentBox([]); // Close the suggestion box if the query is empty
     }
   };
   const handleItemCodeSelect = (index, suggention) => {
-    const { itemCode, itemName, sellingRate, mrpPrices } = suggention;
+    const { itemCode, itemName, sellingPrices, mrpPrices, qty } = suggention;
     const updatestockDetailList = [...stockDetail];
     updatestockDetailList[index].itemCode = itemCode;
     updatestockDetailList[index].itemName = itemName;
-    updatestockDetailList[index].sellingRate = sellingRate;
+    updatestockDetailList[index].sellingPrices = sellingPrices;
     updatestockDetailList[index].mrpPrices = mrpPrices;
+    updatestockDetailList[index].qty = qty;
     setstockDetail(updatestockDetailList);
     setSuggentBox([]);
   };
+  // setstockDetail(handleItemCodeSelect());
+  console.log("suggention=>", typeof handleItemCodeSelect.suggention);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -180,18 +183,20 @@ const PurchaseEntry = () => {
         Object.values(item).every((field) => field !== "")
       ),
     };
-    if (
-      parseFloat(stockDetail.sellingRate) >= parseFloat(stockDetail.netcost)
-    ) {
-      setError(true);
-      return;
-    }
-    if (parseFloat(detail.billAmt) !== parseFloat(detail.totAmt)) {
+    // console.log("purchaseData=>", purchaseData());
+    const hasError = stockDetail.some((item) => {
+      return (
+        parseFloat(stockDetail.sellingRate) < parseFloat(stockDetail.netcost)
+      );
+    });
+
+    if (hasError || parseFloat(detail.billAmt) !== parseFloat(detail.totAmt)) {
       setError(true);
       return;
     }
     setError(false);
-
+    console.log(purchaseData);
+    // purchase update
     if (id) {
       axios
         .put(`http://localhost:4000/purchaseentry/${id}`, purchaseData)
@@ -200,6 +205,7 @@ const PurchaseEntry = () => {
           navigate("/PurchaseHistory");
         });
     } else {
+      // new purchase
       axios
         .post("http://localhost:4000/purchaseentry", purchaseData)
         .then((res) => {
@@ -214,14 +220,12 @@ const PurchaseEntry = () => {
         });
     }
   };
-
+  // calculate tot net Amt
   const calculateTotalNetCost = Array.isArray(stockDetail)
     ? stockDetail.reduce((total, item) => {
-        return total + (parseFloat(item.netcost) || 0); // Ensure to parse amount as float and handle empty values
+        return total + (parseFloat(item.netcost) || 0);
       }, 0)
     : 0;
-
-  console.log(suggentBox);
 
   return (
     <div>
@@ -294,147 +298,150 @@ const PurchaseEntry = () => {
                 </TableRow>
               </TableHead>
 
-              {Array.isArray(stockDetail) &&
-                stockDetail?.map((stockDetail, index) => (
-                  <>
-                    <TableBody key={index}>
-                      <StyledTableRow>
-                        <StyledTableCell
-                          component="th"
-                          scope="row"
-                          //   className="w-32"
-                        >
-                          <input
-                            type="text"
-                            placeholder="item Code"
-                            name="itemCode"
-                            value={stockDetail.itemCode}
-                            onChange={(e) => handleChange(index, e)}
-                            onFocus={() => setActive(index)}
-                            className="w-full p-2 border border-gray-200 bg-white text-black rounded"
-                          />
+              {stockDetail?.map((stockDetail, index) => (
+                <>
+                  <TableBody key={index}>
+                    <StyledTableRow>
+                      <StyledTableCell
+                        component="th"
+                        scope="row"
+                        //   className="w-32"
+                      >
+                        <input
+                          type="text"
+                          placeholder="item Code"
+                          name="itemCode"
+                          value={stockDetail.itemCode}
+                          onChange={(e) => handleChange(index, e)}
+                          onFocus={() => setActive(index)}
+                          className="w-full p-2 border border-gray-200 bg-white text-black rounded"
+                        />
 
-                          {active === index && suggentBox.length > 0 && (
-                            <div className="drop-down w-96 bg-white flex flex-col shadow-md rounded max-h-80 overflow-x-10 absolute">
-                              {suggentBox?.map((suggention, index) => (
-                                <div
-                                  key={index}
-                                  style={{
-                                    padding: "8px",
-                                    cursor: "pointer",
-                                    backgroundColor:
-                                      index % 2 === 0 ? "#f9f9f9" : "#fff",
-                                  }}
-                                  className="search-result flex  justify-between m-2"
-                                  onClick={() => {
-                                    handleItemCodeSelect(index, suggention);
-                                  }}
-                                >
-                                  <p>{suggention.itemCode}</p>
-                                  <p>{suggention.itemName}</p>
-                                  <p>{suggention.sellingRate} sellingRate</p>
-                                  <p>{suggention.mrpPrices}mrpPrices</p>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          <input
-                            type="text"
-                            placeholder="Item Name"
-                            name="itemName"
-                            value={stockDetail.itemName}
-                            onChange={(e) => handleChange(index, e)}
-                            className="w-full p-2 border border-gray-200 bg-white text-black rounded"
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          <input
-                            type="number"
-                            placeholder="Qty"
-                            name="qty"
-                            value={stockDetail.qty}
-                            onChange={(e) => handleChange(index, e)}
-                            className="w-full p-2 border border-gray-200 bg-white text-black rounded"
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          <input
-                            type="number"
-                            placeholder="Cost Price"
-                            name="costPrices"
-                            value={stockDetail.costPrices}
-                            onChange={(e) => handleChange(index, e)}
-                            className="w-full p-2 border border-gray-200 bg-white text-black rounded"
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          <input
-                            type="number"
-                            placeholder="Gst Code"
-                            name="gst"
-                            value={stockDetail.gst}
-                            onChange={(e) => handleChange(index, e)}
-                            className="w-full p-2 border border-gray-200 bg-white text-black rounded"
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          <input
-                            type="number"
-                            placeholder="Discount value"
-                            name="discountAmt"
-                            value={stockDetail.discountAmt}
-                            onChange={(e) => handleChange(index, e)}
-                            className="w-full p-2 border border-gray-200 bg-white text-black rounded"
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          <input
-                            type="number"
-                            placeholder="Net cost "
-                            name="netcost"
-                            value={stockDetail.netcost}
-                            onChange={(e) => handleChange(index, e)}
-                            className="w-full p-2 border border-gray-200 bg-white text-black rounded"
-                            style={{ borderColor: error ? "red" : "" }}
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          <input
-                            type="number"
-                            placeholder="Selling Price "
-                            name="sellingRate"
-                            value={stockDetail.sellingRate}
-                            onChange={(e) => handleChange(index, e)}
-                            className="w-full p-2 border border-gray-200 bg-white text-black rounded"
-                            style={{ borderColor: error ? "red" : "" }}
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          <input
-                            type="number"
-                            placeholder="Mrp"
-                            name="mrpPrices"
-                            value={stockDetail.mrpPrices}
-                            onChange={(e) => handleChange(index, e)}
-                            className="w-full p-2 border border-gray-200 bg-white text-black rounded"
-                          />
-                        </StyledTableCell>
-                        <StyledTableCell>
-                          <input
-                            type="number"
-                            placeholder="Amount"
-                            name="amount"
-                            value={stockDetail.amount}
-                            className="w-full p-2 border border-gray-200 bg-white text-black rounded"
-                            onChange={(e) => handleChange(index, e)}
-                          />
-                        </StyledTableCell>
-                      </StyledTableRow>
-                    </TableBody>
-                  </>
-                ))}
+                        {active === index && suggentBox.length > 0 && (
+                          <div className="drop-down w-96 bg-white flex flex-col shadow-md rounded max-h-80 overflow-x-10 absolute">
+                            {suggentBox?.map((suggention, idx) => (
+                              <div
+                                key={idx}
+                                style={{
+                                  padding: "8px",
+                                  cursor: "pointer",
+                                  backgroundColor:
+                                    index % 2 === 0 ? "#f9f9f9" : "#fff",
+                                }}
+                                className="search-result flex  justify-between m-2"
+                                onClick={() => {
+                                  handleItemCodeSelect(index, suggention);
+                                }}
+                              >
+                                <p>{suggention.itemCode}</p>
+                                <p>{suggention.itemName}</p>
+                                <p>{suggention.sellingPrices} </p>
+                                <p>{suggention.mrpPrices}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <input
+                          type="text"
+                          placeholder="Item Name"
+                          name="itemName"
+                          value={stockDetail.itemName}
+                          onChange={(e) => handleChange(index, e)}
+                          className="w-full p-2 border border-gray-200 bg-white text-black rounded"
+                          disabled={true}
+                        />
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <input
+                          type="number"
+                          placeholder="Qty"
+                          name="qty"
+                          value={stockDetail.qty}
+                          onChange={(e) => handleChange(index, e)}
+                          className="w-full p-2 border border-gray-200 bg-white text-black rounded"
+                        />
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <input
+                          type="number"
+                          placeholder="Cost Price"
+                          name="costPrices"
+                          value={stockDetail.costPrices}
+                          onChange={(e) => handleChange(index, e)}
+                          className="w-full p-2 border border-gray-200 bg-white text-black rounded"
+                        />
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <input
+                          type="number"
+                          placeholder="Gst Code"
+                          name="gst"
+                          value={stockDetail.gst}
+                          onChange={(e) => handleChange(index, e)}
+                          className="w-full p-2 border border-gray-200 bg-white text-black rounded"
+                        />
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <input
+                          type="number"
+                          placeholder="Discount value"
+                          name="discountAmt"
+                          value={stockDetail.discountAmt}
+                          onChange={(e) => handleChange(index, e)}
+                          className="w-full p-2 border border-gray-200 bg-white text-black rounded"
+                        />
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <input
+                          type="number"
+                          placeholder="Net cost "
+                          name="netcost"
+                          value={stockDetail.netcost}
+                          onChange={(e) => handleChange(index, e)}
+                          className="w-full p-2 border border-gray-200 bg-white text-black rounded"
+                          style={{ borderColor: error ? "red" : "" }}
+                          disabled={true}
+                        />
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <input
+                          type="number"
+                          placeholder="Selling Price "
+                          name="sellingPrices"
+                          value={stockDetail.sellingPrices}
+                          onChange={(e) => handleChange(index, e)}
+                          className="w-full p-2 border border-gray-200 bg-white text-black rounded"
+                          style={{ borderColor: error ? "red" : "" }}
+                          // disabled={true}
+                        />
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <input
+                          type="number"
+                          placeholder="Mrp"
+                          name="mrpPrices"
+                          value={stockDetail.mrpPrices}
+                          onChange={(e) => handleChange(index, e)}
+                          className="w-full p-2 border border-gray-200 bg-white text-black rounded"
+                        />
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <input
+                          type="number"
+                          placeholder="Amount"
+                          name="amount"
+                          value={stockDetail.amount}
+                          className="w-full p-2 border border-gray-200 bg-white text-black rounded"
+                          onChange={(e) => handleChange(index, e)}
+                          disabled={true}
+                        />
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  </TableBody>
+                </>
+              ))}
             </Table>
           </TableContainer>
           <div className="flex flex-col items-end justify-end">
