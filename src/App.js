@@ -9,6 +9,7 @@ import PurchaseEntry from "./Purchase/PurchaseEntry";
 import PurchaseHistory from "./Purchase/PurchaseHistory";
 import { ToastContainer } from "react-toastify";
 import { Toaster } from "react-hot-toast";
+import OpenstockDetail from "./OpenStock/OpenStock";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/PurchaseEntry" element={<PurchaseEntry />} />
         <Route path="/PurchaseHistory" element={<PurchaseHistory />} />
         <Route path="/PurchaseEntry/:id" element={<PurchaseEntry />} />
+        <Route path="/OpeningStockView" element={<OpenstockDetail />} />
       </Routes>
     </div>
   );

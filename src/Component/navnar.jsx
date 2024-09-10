@@ -12,8 +12,11 @@ const Navbar = () => {
           <a href="#" className="text-white hover:text-gray-300">
             About
           </a>
-          <a href="#" className="text-white hover:text-gray-300">
-            Services
+          <a
+            href="/OpeningStockView"
+            className="text-white hover:text-gray-300"
+          >
+            Open Stock Details
           </a>
           <a href="#" className="text-white hover:text-gray-300">
             Contact
