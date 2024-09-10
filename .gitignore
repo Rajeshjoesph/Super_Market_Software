@@ -23,3 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 /vscode
+/src/OpenStock/note.txt
+/src/Purchase/note.txt
