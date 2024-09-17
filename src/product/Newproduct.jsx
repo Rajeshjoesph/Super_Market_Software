@@ -15,6 +15,8 @@ const CreateProduct = () => {
     encode: "",
     manufacturer: "",
     gst: "",
+    sellingPrices: "",
+    mrpPrices: "",
   };
   const [formData, setFormData] = useState(initstate);
 
@@ -151,6 +153,36 @@ const CreateProduct = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter your gst"
+            required
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-gray-700 font-medium mb-2" htmlFor="gst">
+            Selling Prices
+          </label>
+          <input
+            type="sellingPrices"
+            id="sellingPrices"
+            name="sellingPrices"
+            value={formData.sellingPrices}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your gst"
+            required
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-gray-700 font-medium mb-2" htmlFor="gst">
+            Mrp Prices
+          </label>
+          <input
+            type="mrpPrices"
+            id="mrpPrices"
+            name="mrpPrices"
+            value={formData.mrpPrices}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your mrpPrices"
             required
           />
         </div>

@@ -8,6 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { link } from "material-paper/build/lib/styles/paper.stl";
 import { RiEdit2Fill } from "react-icons/ri";
+import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 
@@ -31,7 +32,7 @@ const TableHeader = ({ columns }) => {
   );
 };
 
-const TableRowContent = ({ columns, row }) => {
+const TableRowContent = ({ columns, row, onDelete }) => {
   return (
     <React.Fragment>
       {columns.map((column) => (
@@ -43,8 +44,18 @@ const TableRowContent = ({ columns, row }) => {
           {column.dataKey !== "edit" ? (
             row[column.dataKey]
           ) : (
-            <IconButton component={Link} to={link}>
+            <IconButton
+              component={Link}
+              to={column.link.replace("_id", row["_id"])}
+            >
               <RiEdit2Fill />
+            </IconButton>
+          )}
+          {column.dataKey !== "delete" ? (
+            <></>
+          ) : (
+            <IconButton component={Link} onClick={() => onDelete(row["_id"])}>
+              <MdDelete />
             </IconButton>
           )}
         </TableCell>

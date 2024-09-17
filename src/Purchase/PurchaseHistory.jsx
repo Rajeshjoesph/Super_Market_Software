@@ -27,6 +27,21 @@ const PurchaseHistory = () => {
     };
     recivedata();
   }, []);
+
+  // delete function
+  // last step where is id
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:4000/purchaseentry/${id}`
+      );
+      if (res.status === 200) {
+        setViewDetail(veiwDetail.filter((item) => item._id !== id));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   console.log(veiwDetail);
   const columnWidth = 52;
   const PurchaseColumn = [
@@ -40,6 +55,12 @@ const PurchaseHistory = () => {
       dataKey: "edit",
       link: `/purchaseentry/_id`,
     },
+    {
+      width: columnWidth,
+      label: "Delete",
+      dataKey: "delete",
+      link: `/purchaseentry/_id`,
+    },
   ];
 
   return (
@@ -51,7 +72,12 @@ const PurchaseHistory = () => {
             components={VirtuosoTableComponents}
             fixedHeaderContent={() => <TableHeader columns={PurchaseColumn} />}
             itemContent={(index, row) => (
-              <TableRowContent key={index} columns={PurchaseColumn} row={row} />
+              <TableRowContent
+                key={index}
+                columns={PurchaseColumn}
+                row={row}
+                onDelete={handleDelete}
+              />
             )}
           />
         ) : (

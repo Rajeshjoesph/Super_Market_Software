@@ -166,7 +166,7 @@ const PurchaseEntry = () => {
     const updatestockDetailList = [...stockDetail];
     updatestockDetailList[index].itemCode = itemCode;
     updatestockDetailList[index].itemName = itemName;
-    updatestockDetailList[index].sellingPrices = sellingPrices;
+    updatestockDetailList[index].sellingRate = sellingPrices;
     updatestockDetailList[index].mrpPrices = mrpPrices;
     updatestockDetailList[index].qty = qty;
     setstockDetail(updatestockDetailList);
@@ -192,7 +192,6 @@ const PurchaseEntry = () => {
       stockDetail: stockDetail.filter(
         (item) =>
           item.itemCode !== "" && item.qty !== "" && item.costPrices !== ""
-        // Object.values(item).every((field) => field !== "")
       ),
     };
     console.log(stockDetail);
@@ -338,7 +337,7 @@ const PurchaseEntry = () => {
                             >
                               <p>{suggention.itemCode}</p>
                               <p>{suggention.itemName}</p>
-                              <p>{suggention.sellingPrices} </p>
+                              <p>{suggention.sellingRate} </p>
                               <p>{suggention.mrpPrices}</p>
                             </div>
                           ))}
@@ -412,8 +411,8 @@ const PurchaseEntry = () => {
                       <input
                         type="number"
                         placeholder="Selling Price "
-                        name="sellingPrices"
-                        value={stockDetail.sellingPrices}
+                        name="sellingRate"
+                        value={stockDetail.sellingRate}
                         onChange={(e) => handleChange(index, e)}
                         className="w-full p-2 border border-gray-200 bg-white text-black rounded"
                         style={{ borderColor: error ? "red" : "" }}

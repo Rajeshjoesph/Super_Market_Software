@@ -35,13 +35,12 @@ const OpenstockDetail = () => {
     { width: columnWidth, label: "Selling", dataKey: "sellingPrices" },
     { width: columnWidth, label: "Mrp", dataKey: "mrpPrices" },
     { width: columnWidth, label: "Stock", dataKey: "stockLevel" },
-
     { width: columnWidth, label: "Encode", dataKey: "encode" },
   ];
 
   return (
     <div>
-      <h1>Open stock </h1>
+      <h1>Inventory Details</h1>
       <Paper style={{ height: 800, width: "100%" }} className="h-1/4 w-fill">
         {openStock.length > 0 ? (
           <TableVirtuoso
@@ -56,14 +55,6 @@ const OpenstockDetail = () => {
           <p> Loading Data...</p>
         )}
       </Paper>
-
-      {/*
-      {openstock?.map((item) => (
-        <>
-          <p>{item.itemCode}</p>
-          <p>{item.itemName}</p>
-        </>
-      ))} */}
     </div>
   );
 };
