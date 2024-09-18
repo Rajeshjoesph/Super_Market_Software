@@ -1,4 +1,38 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
+const sidebarData = [
+  {
+    icon: "",
+    title: "Sale Bill",
+    link: "",
+  },
+  {
+    icon: "",
+    title: "Purchase Entry",
+    link: "/PurchaseEntry",
+  },
+  {
+    icon: "",
+    title: "Purchase History",
+    link: "/PurchaseHistory",
+  },
+  {
+    icon: "",
+    title: "Create Product",
+    link: "/create",
+  },
+  {
+    icon: "",
+    title: "View Product",
+    link: "/Allproduct",
+  },
+  {
+    icon: "",
+    title: "Open Stock details",
+    link: "/OpeningStockView",
+  },
+];
 
 const Navbar = () => {
   return (
@@ -6,24 +40,14 @@ const Navbar = () => {
       <div className="container mx-auto">
         <div className="text-white font-bold text-xl p-2">Super Market</div>
         <div className="flex flex-col items-start space-y-4 p-6">
-          <a href="#" className="text-white hover:text-gray-300">
-            Home
-          </a>
-          <a href="#" className="text-white hover:text-gray-300">
-            About
-          </a>
-          <a
-            href="/OpeningStockView"
-            className="text-white hover:text-gray-300"
-          >
-            Open Stock Details
-          </a>
-          <a href="#" className="text-white hover:text-gray-300">
-            Contact
-          </a>
-          <a href="#" className="text-white hover:text-gray-300">
-            Login
-          </a>
+          {sidebarData.map((items) => (
+            <Link
+              to={items.link}
+              className="text-white pb-5 hover:text-gray-500"
+            >
+              {items.title}
+            </Link>
+          ))}
         </div>
       </div>
     </div>
