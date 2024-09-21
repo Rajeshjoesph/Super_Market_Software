@@ -1,11 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
 const sidebarData = [
   {
     icon: "",
     title: "Sale Bill",
-    link: "",
+    link: "/Sale",
   },
   {
     icon: "",

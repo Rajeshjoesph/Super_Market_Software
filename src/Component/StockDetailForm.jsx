@@ -30,7 +30,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const StockDetailTable = ({ detail, error }) => {
+const StockDetailTable = ({ detail, error, setDetail, handleSubmit }) => {
   const generateDefaultRows = (initstate) => {
     return Array.from({ length: 5 }, (_, index) => ({
       ...initstate,
@@ -50,10 +50,27 @@ const StockDetailTable = ({ detail, error }) => {
     netcost: "",
     amount: "",
   };
-  const [stockDetail, setstockDetail] = useState(generateDefaultRows());
+  const [stockDetail, setstockDetail] = useState(
+    generateDefaultRows(initstate)
+  );
 
   const [suggentBox, setSuggentBox] = useState([]);
   const [active, setActive] = useState(null);
+
+  useEffect(() => {
+    if (Array.isArray(stockDetail)) {
+      const updateTotalAmount = () => {
+        const totalAmount = stockDetail.reduce((total, item) => {
+          return total + (parseFloat(item.amount) || 0); // Ensure to parse amount as float and handle empty values
+        }, 0);
+        setDetail((prevDetail) => ({
+          ...prevDetail,
+          totAmt: totalAmount.toFixed(2), // Update totAmt in detail state
+        }));
+      };
+      updateTotalAmount();
+    }
+  }, [stockDetail]);
 
   const fetchItemCodeSuggent = async (query) => {
     if (query.length > 1) {
@@ -328,3 +345,13 @@ const StockDetailTable = ({ detail, error }) => {
 };
 
 export default StockDetailTable;
+
+<StockDetailTable
+  error={error}
+  detail={detail}
+  setDetail={setDetail}
+  stockDetail={stockDetail}
+  setstockDetail={setstockDetail}
+  generateDefaultRows={generateDefaultRows}
+  handleSubmit={handleSubmit}
+/>;
