@@ -67,43 +67,49 @@ const SaleBills = () => {
       title: "Item Code",
       name: "itemCode",
       dataType: "number",
+      value: "",
     },
     {
       title: "Description",
       name: "itemName",
       dataType: "text",
+      value: "",
     },
     {
       title: "Qty",
       name: "qty",
       dataType: "number",
+      value: "",
     },
     {
       title: "Selling Prices",
       name: "sellingRate",
       dataType: "number",
+      value: "",
     },
     {
       title: "Mrp",
       name: "mrpPrices",
       dataType: "number",
+      value: "",
     },
     {
       title: "Amt",
       name: "amount",
       dataType: "number",
+      value: "",
     },
   ];
 
   const generateDefaultRows = () => {
-    return Array.from({ length: 1 }, (_, index) => ({
+    return Array.from({ length: 2 }, (_, index) => ({
       ...initState,
       id: `row-${index + 1}`, // Unique ID for each row
     }));
   };
 
   const [billItem, setBillItem] = useState(generateDefaultRows());
-  console.log(billItem);
+  const [error, setError] = useState();
 
   const handleChange = (rowIndex, e) => {
     const { name, value } = e.target;
@@ -115,16 +121,27 @@ const SaleBills = () => {
 
     setBillItem(updateRow);
 
-    const lastItemField = Object.values(updateRow[rowIndex]).every(
+    const lastRowIndex = billItem.length - 1;
+    const allFieldsfilled = Object.values(updateRow[lastRowIndex]).every(
       (field) => field !== "" && field !== null
     );
-    if (lastItemField && rowIndex === updateRow.length - 1) {
+
+    if (allFieldsfilled && rowIndex === lastRowIndex) {
       setBillItem((prevRow) => [
         ...prevRow,
         { ...initState, id: `row-${prevRow.length + 1}` },
       ]);
     }
+    console.log("amount:", updateRow[rowIndex].amount);
   };
+  // console.log(calculateAmt);
+  // const calculateAmt = billItem.qty * billItem.sellingRate;>?
+
+  const calculateTotalAmt = Array.isArray(billItem)
+    ? billItem.reduce((total, item) => {
+        return total + (parseFloat(item.amount) || 0);
+      }, 0)
+    : 0;
 
   return (
     <div>
@@ -176,6 +193,25 @@ const SaleBills = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <div className="flex flex-col items-end justify-end">
+            <div className="flex flex-col items-end">
+              <h2 className="text-lg font-semibold">
+                Net Amount: {calculateTotalAmt.toFixed(2)}
+              </h2>
+              <h2 className="text-lg font-semibold">Total Amount:</h2>
+              {error && (
+                <p style={{ color: "red" }}>
+                  Bill Amount and Total Amount must match!
+                </p>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="m-4  bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              Save
+            </button>
+          </div>
         </form>
       </div>
     </div>
