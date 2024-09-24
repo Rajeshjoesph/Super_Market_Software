@@ -108,18 +108,29 @@ const SaleBills = () => {
     }));
   };
 
+  const [coustInfo, setCoustInfo] = useState(coustomerDtlState);
   const [billItem, setBillItem] = useState(generateDefaultRows());
   const [error, setError] = useState();
 
   const handleChange = (rowIndex, e) => {
     const { name, value } = e.target;
     const updateRow = [...billItem];
+    updateRow[rowIndex][name] = value;
+    setBillItem(updateRow);
 
     if (updateRow[rowIndex]) {
       updateRow[rowIndex][name] = value;
     }
 
-    setBillItem(updateRow);
+    if (
+      name === "qty" ||
+      name === "sellingRate" ||
+      name === "gst" ||
+      name === "discountAmt"
+    ) {
+      billItem[rowIndex].amount =
+        billItem[rowIndex].qty * billItem[rowIndex].sellingRate;
+    }
 
     const lastRowIndex = billItem.length - 1;
     const allFieldsfilled = Object.values(updateRow[lastRowIndex]).every(
@@ -132,10 +143,23 @@ const SaleBills = () => {
         { ...initState, id: `row-${prevRow.length + 1}` },
       ]);
     }
-    console.log("amount:", updateRow[rowIndex].amount);
   };
-  // console.log(calculateAmt);
-  // const calculateAmt = billItem.qty * billItem.sellingRate;>?
+
+  const saleEntry = {
+    ...coustInfo,
+    productDetail: billItem.filter(
+      (item) =>
+        item.itemCode !== "" && item.qty !== "" && item.sellingRate !== ""
+    ),
+  };
+  // console.log(billItem);
+
+  console.log(saleEntry);
+
+  const handleChangeCoustomerdtl = (e) => {
+    const { name, value } = e.target;
+    setCoustInfo({ ...coustInfo, [name]: value });
+  };
 
   const calculateTotalAmt = Array.isArray(billItem)
     ? billItem.reduce((total, item) => {
@@ -155,6 +179,7 @@ const SaleBills = () => {
                 <input
                   type={key.dataType}
                   name={key.name}
+                  onChange={(e) => handleChangeCoustomerdtl(e)}
                   className="w-full p-2 border border-gray-200 bg-white text-black rounded"
                 />
               </div>
@@ -195,10 +220,9 @@ const SaleBills = () => {
           </TableContainer>
           <div className="flex flex-col items-end justify-end">
             <div className="flex flex-col items-end">
-              <h2 className="text-lg font-semibold">
-                Net Amount: {calculateTotalAmt.toFixed(2)}
+              <h2 className="text-2xl font-semibold mt-5">
+                Total Amount:{calculateTotalAmt.toFixed(2)}
               </h2>
-              <h2 className="text-lg font-semibold">Total Amount:</h2>
               {error && (
                 <p style={{ color: "red" }}>
                   Bill Amount and Total Amount must match!
