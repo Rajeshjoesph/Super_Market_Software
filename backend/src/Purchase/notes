@@ -1,0 +1,42 @@
+// raw code
+const inboundEntry = async (req, res) => {
+  try {
+    let date = new Date();
+    let entrydate =
+      date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear();
+
+    let inboundData = { entrydate: entrydate, ...req.body };
+    console.log(inboundData);
+
+    const PurchaseData = await purchase.create(inboundData);
+    console.log("PurchaseData", PurchaseData);
+    res.json({
+      data: PurchaseData,
+      message: "product create successfully ",
+    });
+
+    for (const item of inboundData.stockDetail) {
+      const { itemCode, qty } = item;
+      const stock = await stockUpdate.updateOne(
+        { itemCode: itemCode },
+        { $inc: { stockLevel: qty } }
+      );
+      if (stock.matchedCount > 0) {
+        console.log(
+          `Updated stock for itemCode ${itemCode}: Increased by ${qty}`
+        );
+      } else {
+        console.log(
+          `Item with itemCode ${itemCode} not found. Please check your data.`
+        );
+      }
+    }
+  } catch (err) {
+    res.json({
+      Error: err,
+    });
+  }
+};
+
+thinku24;
+delip;
