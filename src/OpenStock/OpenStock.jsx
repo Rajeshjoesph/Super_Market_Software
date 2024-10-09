@@ -1,5 +1,4 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import Paper from "@mui/material/Paper";
 import {
   TableHeader,
@@ -7,52 +6,95 @@ import {
   VirtuosoTableComponents,
 } from "../Component/table";
 import { TableVirtuoso } from "react-virtuoso";
+import { storeContext } from "../Context/StoreContext";
+import { MaterialReactTable } from "material-react-table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowDownWideShort,
+  faBars,
+  faBarsStaggered,
+  faColumns,
+  faCompress,
+  faDeleteLeft,
+  faEdit,
+  faEllipsisH,
+  faEllipsisVertical,
+  faExpand,
+  faEyeSlash,
+  faFilter,
+  faFilterCircleXmark,
+  faGripLines,
+  faSearch,
+  faSearchMinus,
+  faSortDown,
+  faThumbTack,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import axios from "axios";
+config.autoAddCss = false;
+
+const fontAwesomeIcons = {
+  ArrowDownwardIcon: (props) => (
+    <FontAwesomeIcon icon={faSortDown} {...props} />
+  ),
+  ClearAllIcon: () => <FontAwesomeIcon icon={faBarsStaggered} />,
+  DensityLargeIcon: () => <FontAwesomeIcon icon={faGripLines} />,
+  DensityMediumIcon: () => <FontAwesomeIcon icon={faBars} />,
+  DensitySmallIcon: () => <FontAwesomeIcon icon={faBars} />,
+  DragHandleIcon: () => <FontAwesomeIcon icon={faGripLines} />,
+  FilterListIcon: (props) => <FontAwesomeIcon icon={faFilter} {...props} />,
+  FilterListOffIcon: () => <FontAwesomeIcon icon={faFilterCircleXmark} />,
+  FullscreenExitIcon: () => <FontAwesomeIcon icon={faCompress} />,
+  FullscreenIcon: () => <FontAwesomeIcon icon={faExpand} />,
+  SearchIcon: (props) => <FontAwesomeIcon icon={faSearch} {...props} />,
+  SearchOffIcon: () => <FontAwesomeIcon icon={faSearchMinus} />,
+  ViewColumnIcon: () => <FontAwesomeIcon icon={faColumns} />,
+  MoreVertIcon: () => <FontAwesomeIcon icon={faEllipsisVertical} />,
+  MoreHorizIcon: () => <FontAwesomeIcon icon={faEllipsisH} />,
+  SortIcon: (props) => (
+    <FontAwesomeIcon icon={faArrowDownWideShort} {...props} />
+  ),
+  PushPinIcon: (props) => <FontAwesomeIcon icon={faThumbTack} {...props} />,
+  VisibilityOffIcon: () => <FontAwesomeIcon icon={faEyeSlash} />,
+};
 
 const OpenstockDetail = () => {
-  const [openStock, setopenStock] = useState([]);
+  const { openStock, getStock, value } = useContext(storeContext);
+  // const [openStock, setopenStock] = useState([]);
 
   useEffect(() => {
-    const stockApi = async () => {
-      try {
-        const res = await axios.get("http://localhost:4000/openstock");
-
-        if (res.status === 200) {
-          setopenStock(res.data.data);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    stockApi();
+    getStock();
   }, []);
 
-  console.log(openStock);
-  const columnWidth = 52;
+  const columns = useMemo(
+    () => [
+      { accessorKey: "itemCode", header: "ItemCode" },
+      { accessorKey: "itemName", header: "ItemName" },
+      { accessorKey: "sellingPrices", header: "Selling" },
+      { accessorKey: "mrpPrices", header: "Mrp" },
+      { accessorKey: "stockLevel", header: "Stock" },
+      { accessorKey: "encode", header: "Encode" },
+    ],
 
-  const columns = [
-    { width: columnWidth, label: "ItemCode", dataKey: "itemCode" },
-    { width: columnWidth, label: "ItemName", dataKey: "itemName" },
-    { width: columnWidth, label: "Selling", dataKey: "sellingPrices" },
-    { width: columnWidth, label: "Mrp", dataKey: "mrpPrices" },
-    { width: columnWidth, label: "Stock", dataKey: "stockLevel" },
-    { width: columnWidth, label: "Encode", dataKey: "encode" },
-  ];
+    []
+  );
 
   return (
     <div>
       <h1>Inventory Details</h1>
       <Paper style={{ height: 800, width: "100%" }} className="h-1/4 w-fill">
-        {openStock.length > 0 ? (
-          <TableVirtuoso
-            data={openStock}
-            components={VirtuosoTableComponents}
-            fixedHeaderContent={() => <TableHeader columns={columns} />}
-            itemContent={(index, row) => (
-              <TableRowContent columns={columns} row={row} />
-            )}
+        {value.length > 0 ? (
+          <MaterialReactTable
+            columns={columns}
+            data={value}
+            enableColumnOrdering
+            enableColumnPinning
+            icons={fontAwesomeIcons}
           />
         ) : (
-          <p> Loading Data...</p>
+          <h1> Loading Data...</h1>
         )}
       </Paper>
     </div>
