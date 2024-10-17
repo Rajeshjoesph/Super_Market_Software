@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { MaterialReactTable } from "material-react-table";
+import { IconButton } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowDownWideShort,
@@ -25,6 +26,10 @@ import {
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import axios from "axios";
+import { MdDelete } from "react-icons/md";
+import { Link } from "react-router-dom";
+import { RiEdit2Fill } from "react-icons/ri";
+import { storeContext } from "../Context/StoreContext";
 config.autoAddCss = false;
 
 const fontAwesomeIcons = {
@@ -53,34 +58,31 @@ const fontAwesomeIcons = {
 };
 
 const DisplayUsers = () => {
-  const [users, setUsers] = useState([]);
+  const { users, setUsers } = useContext(storeContext);
+  // const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    const getUsers = async () => {
-      await axios.get("http://localhost:4000/users").then((res) => {
-        console.log(res.data.data);
-        setUsers(res.data.data);
-        // console.log("object=>", Object.keys(res.data.data));
-      });
-    };
-    getUsers();
-  }, []);
+  // useEffect(() => {
+  //   const getUsers = async () => {
+  //     await axios.get("http://localhost:4000/users").then((res) => {
+  //       console.log(res.data.data);
+  //       setUsers(res.data.data);
+  //       // console.log("object=>", Object.keys(res.data.data));
+  //     });
+  //   };
+  //   getUsers();
+  // }, []);
 
-  const handleEdit = (row) => {
-    console.log("Edit clicked for row:", row);
-    // Add your edit logic here
-  };
+  const handleDelete = async (id) => {
+    console.log(id);
 
-  const handleDelete = async (row, id) => {
-    try {
-      await axios.delete(`http://localhost:4000/users/:id`).then((res) => {
-        console.log(res.data, "Delete");
-      });
-    } catch (err) {
-      console.log(err);
-    }
-    console.log("Delete clicked for row:", row);
-    // Add your delete logic here
+    await axios
+      .delete(`http://localhost:4000/users/${id}`)
+      .then((res) => {
+        if (res.status === 200) {
+          setUsers((prev) => prev.filter((item) => item._id !== id));
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   const columns = useMemo(
@@ -95,18 +97,22 @@ const DisplayUsers = () => {
         accessorKey: "edit",
         header: "Edit",
         Cell: ({ row }) => (
-          <button onClick={() => handleEdit(row.original)}>
-            <FontAwesomeIcon icon={faEdit} style={{ cursor: "pointer" }} />
-          </button>
+          <IconButton component={Link} to={`/users/${row.original._id}`}>
+            {/* <button onClick={() => handleEdit(row.original)}> */}
+            <RiEdit2Fill />
+          </IconButton>
         ),
       },
       {
-        accessorKey: "status",
-        header: "Delate",
+        accessorKey: "_id",
+        header: "Delete",
         Cell: ({ row }) => (
-          <button onClick={handleDelete(row.original)}>
-            <FontAwesomeIcon icon={faTrash} style={{ cursor: "pointer" }} />
-          </button>
+          <IconButton
+            component={Link}
+            onClick={() => handleDelete(row.original._id)}
+          >
+            <MdDelete />
+          </IconButton>
         ),
       },
     ],
@@ -115,13 +121,19 @@ const DisplayUsers = () => {
   );
 
   return (
-    <MaterialReactTable
-      columns={columns}
-      data={users}
-      enableColumnOrdering
-      enableColumnPinning
-      icons={fontAwesomeIcons}
-    />
+    <>
+      {users.length > 0 ? (
+        <MaterialReactTable
+          columns={columns}
+          data={users}
+          enableColumnOrdering
+          enableColumnPinning
+          icons={fontAwesomeIcons}
+        />
+      ) : (
+        <h1>No Data Found....!</h1>
+      )}
+    </>
   );
 };
 
