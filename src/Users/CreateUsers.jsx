@@ -1,5 +1,7 @@
+import { CheckBox } from "@mui/icons-material";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 // The form data array
 const UserForm = [
@@ -7,6 +9,7 @@ const UserForm = [
     title: "User Name",
     name: "name",
     dataType: "text",
+    value: {},
   },
   {
     title: "User Email",
@@ -32,6 +35,8 @@ const UserForm = [
 ];
 
 const DynamicForm = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
   const initState = {
     name: "",
     email: "",
@@ -44,43 +49,84 @@ const DynamicForm = () => {
 
   // Handle form input change
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, Checked } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: type === "checkbox" ? Checked : value,
     });
   };
+  console.log(formData);
+  useEffect(() => {
+    if (id) {
+      const UserDataApi = async () => {
+        try {
+          await axios.get(`http://localhost:4000/users/${id}`).then((res) => {
+            const UserData = res.data.data;
+            // console.log(UserData);
+
+            setFormData({
+              name: UserData.name || "",
+              email: UserData.email || "",
+              password: UserData.password || "",
+              confirmPassword: UserData.password || "",
+              role: UserData.role || "User",
+            });
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      UserDataApi();
+    }
+  }, [id]);
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-
     // Add custom validation (e.g., password matching)
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
 
-    axios
-      .post("http://localhost:4000/users", formData)
-      .then((res) => {
-        if (res.status === 200) {
-          setFormData(initState);
-          console.log(res.data.message);
-        }
-      })
+    if (id) {
+      axios
+        .put(`http://localhost:4000/users/${id}`, formData)
+        .then((res) => {
+          if (res.status === 200) {
+            setFormData(initState);
+            console.log(res.data.message);
+          }
+        })
 
-      .catch((err) => {
-        console.log(err);
-      });
+        .catch((err) => {
+          console.log(err);
+        });
+      navigate("/AllUsers");
+      console.log("submit=>", formData); // Output the form data for now
+    } else {
+      axios
+        .post("http://localhost:4000/users", formData)
+        .then((res) => {
+          if (res.status === 200) {
+            setFormData(initState);
+            console.log(res.data.message);
+          }
+        })
 
-    console.log("submit=>", formData); // Output the form data for now
+        .catch((err) => {
+          console.log(err);
+        });
+
+      console.log("submit=>", formData); // Output the form data for now
+    }
 
     // You can send the form data to a server or API here
   };
 
   return (
     <div style={styles.container}>
+      <h1>{id ? "Edit User" : "Create Users"}</h1>
       <h2>Dynamic Signup Form</h2>
       <form onSubmit={handleSubmit} style={styles.form}>
         {/* Loop through UserForm array to generate form fields */}
@@ -90,7 +136,7 @@ const DynamicForm = () => {
             {field.dataType === "select" ? (
               <select
                 name={field.name}
-                value={formData[field.name]}
+                value={formData[field.name] || ""}
                 onChange={handleChange}
                 style={styles.input}
               >
@@ -104,7 +150,7 @@ const DynamicForm = () => {
               <input
                 type={field.dataType || "text"} // Default to 'text' if no type is specified
                 name={field.name}
-                value={formData[field.name]}
+                value={formData[field.name] || ""}
                 onChange={handleChange}
                 required
                 style={styles.input}
@@ -113,8 +159,9 @@ const DynamicForm = () => {
             )}
           </div>
         ))}
+        {/* {console.log(formData[field.name])} */}
         <button type="submit" style={styles.button}>
-          Sign Up
+          {id ? "Update Users" : "Create Users"}
         </button>
       </form>
     </div>
