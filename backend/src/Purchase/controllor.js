@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const purchase = require("./module");
 const stockUpdate = require("../stock_inventroy/module");
+const moment = require("moment");
 
 const inboundEntry = async (req, res) => {
   try {
@@ -33,7 +34,8 @@ const inboundEntry = async (req, res) => {
 
     let date = new Date();
     let entrydate =
-      date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear();
+      date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+    console.log("entrydate", date.getMonth());
 
     let inboundData = {
       GrnNo: formattedGrnNumber,
@@ -176,10 +178,25 @@ const inboundBillDelete = async (req, res) => {
   }
 };
 
+const currentDatePurchase = async (req, res) => {
+  try {
+    const today = moment().format("D/M/YYYY");
+    // console.log(today);
+
+    const todayPurchase = await purchase.find({ entrydate: today });
+    // console.log(todayPurchase);
+
+    res.status(200).json({ data: todayPurchase, message: "Today Purchase" });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   inboundEntry,
   inboundDetails,
   inboundBillDatil,
   inboundBillEdit,
   inboundBillDelete,
+  currentDatePurchase,
 };
