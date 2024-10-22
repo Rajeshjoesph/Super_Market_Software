@@ -14,7 +14,7 @@ const outBound = new mongoose.Schema({
     require: true,
   },
   coustomerMobileNo: {
-    type: Number,
+    type: String,
     require: true,
   },
   coustomerPlace: {
@@ -23,6 +23,10 @@ const outBound = new mongoose.Schema({
   },
   totalAmt: {
     type: Number,
+    require: true,
+  },
+  paymentType: {
+    type: String,
     require: true,
   },
   productDetail: [
