@@ -54,18 +54,86 @@ const GetUsers = async (req, res) => {
 const GetSingleUser = async (req, res) => {
   try {
     const id = req.params.id;
+    console.log(id);
+
     const user = await Users.findById(id);
     if (!user) {
       res.json({
         message: "User is not  found",
       });
-      res.status(200).json({
-        data: user,
-        message: "User found successfully",
-      });
     }
+    res.status(200).json({
+      data: user,
+      message: "User found successfully",
+    });
   } catch (err) {
     res.json({ message: err });
+  }
+};
+const updateUserDetail = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updateUser = await Users.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+
+    if (!updateUser) {
+      res.json({
+        message: "User is not  found",
+      });
+    }
+    res.status(200).json({
+      data: updateUser,
+      message: "Update Sussesfully",
+    });
+  } catch (err) {
+    res.json({
+      message: err,
+    });
+  }
+};
+
+const sigin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // const user = await Users.find({ email, password });
+    const user = await Users.findOne({ email: email, password: password });
+
+    console.log(user);
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Invail User Login and Password",
+      });
+    }
+    return res.status(200).json({
+      message: "Login Sussesfully",
+    });
+  } catch (err) {
+    return res.json({
+      message: err,
+    });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const deleteUser = await Users.findOneAndDelete(id);
+    if (!deleteUser || deleteUser.length === 0) {
+      res.json({
+        message: "User is not found",
+      });
+    }
+    res.json({
+      data: deleteUser,
+      message: "SuccessFully User Deleted",
+    });
+  } catch (err) {
+    res.json({
+      Error: err,
+    });
   }
 };
 
@@ -73,4 +141,7 @@ module.exports = {
   CreateUsers,
   GetUsers,
   GetSingleUser,
+  updateUserDetail,
+  sigin,
+  deleteUser,
 };
