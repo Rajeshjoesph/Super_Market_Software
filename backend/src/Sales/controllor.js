@@ -1,9 +1,12 @@
 const { json } = require("express");
 const salesModules = require("./module");
 const stockUpdate = require("../stock_inventroy/module");
+const io = require("../../index");
+const moment = require("moment");
 // bill entry
 const saleBill = async (req, res) => {
   try {
+    const io = req.io;
     // console.log(req.body);
     const lastBill = await salesModules.findOne().sort({ _id: -1 });
     const lastBillNum = lastBill
@@ -30,10 +33,10 @@ const saleBill = async (req, res) => {
       })),
     };
     const storeSaleBill = await salesModules.create(outBound);
-    console.log(outBound);
+    // console.log("storeSaleBill=>", storeSaleBill);
 
-    for (item of outBound.productDetail) {
-      const { itemCode, qty, sellingRate, mrpPrices } = item;
+    for (const item of outBound.productDetail) {
+      const { itemCode, qty } = item;
 
       const stock = await stockUpdate.updateOne(
         { itemCode: itemCode },
@@ -42,10 +45,27 @@ const saleBill = async (req, res) => {
         }
       );
       if (stock.matchedCount > 0) {
+        const updateStock = await stockUpdate.findOne({ itemCode }).lean();
+        console.log(updateStock);
+
+        console.log(
+          updateStock.itemCode,
+          "Stock update data:",
+          updateStock.stockLevel
+        );
+        if (updateStock.stockLevel < 50) {
+          console.log("Stock update data message");
+
+          io.emit("lowStockAlert", {
+            itemCode: updateStock.itemCode,
+            stockLevel: updateStock.stockLevel,
+            message: `Stock for ${updateStock.itemCode} is low: ${updateStock.stockLevel} units left.`,
+          });
+        }
         console.log(
           `Updated stock for itemCode ${itemCode}: SoildOut by ${qty}`
         );
-        console.log("Sale entry saved with Bill Code:", res.data.billCode);
+        console.log("Sale entry saved with Bill Code:", storeSaleBill.billNum);
       } else {
         console.log(
           `Item with itemCode ${itemCode} not found. Please check your data.`
@@ -56,10 +76,10 @@ const saleBill = async (req, res) => {
       data: storeSaleBill,
       Message: "Bill Was Saved",
     });
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({
       Error: "Some thing was error",
-      details: err,
+      details: error.message,
     });
   }
 };
@@ -82,7 +102,8 @@ const viewBills = async (req, res) => {
 
 const findBill = async (req, res) => {
   try {
-    console.log(req.id);
+    const id = req.params.id;
+
     let data = await salesModules.findById(id);
     res.json({
       data: data,
@@ -107,4 +128,49 @@ const deleteBill = async (req, res) => {
   } catch (error) {}
 };
 
-module.exports = { saleBill, viewBills, findBill, deleteBill };
+const UpdateSalebill = async (req, res) => {
+  try {
+    const updateBill = await salesModules.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+      }
+    );
+    if (!updateBill) {
+      res.json({
+        message: "bill not find",
+      });
+      res.status(200).json({
+        data: updateBill,
+        message: "Bill Updated",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const currentDateSales = async (req, res) => {
+  try {
+    const today = moment().format("D/M/YYYY");
+
+    const todaySales = await salesModules.find({ entrydate: today });
+
+    res.status(200).json({
+      data: todaySales,
+      message: "Today’s entries fetched successfully",
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch today’s entries" });
+  }
+};
+
+module.exports = {
+  saleBill,
+  viewBills,
+  findBill,
+  deleteBill,
+  currentDateSales,
+  UpdateSalebill,
+};
