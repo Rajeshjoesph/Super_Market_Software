@@ -14,4 +14,8 @@ purchaserouter
   .get(inboundControllor.inboundBillDatil)
   .put(inboundControllor.inboundBillEdit)
   .delete(inboundControllor.inboundBillDelete);
+
+purchaserouter
+  .route("/todayPurchase")
+  .get(inboundControllor.currentDatePurchase);
 module.exports = purchaserouter;
