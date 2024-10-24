@@ -1,83 +1,130 @@
-import * as React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { link } from "material-paper/build/lib/styles/paper.stl";
-import { RiEdit2Fill } from "react-icons/ri";
-import { MdDelete } from "react-icons/md";
-import { Link } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
+import { useState } from "react";
+import { handleChangeCoustomerdtl } from "../Sale/Sale";
 
-// import { TableVirtuoso } from "react-virtuoso";
+const PaymentScreen = ({
+  totalAmount,
+  onClose,
+  onSubmit,
+  onPaymentTypeChange,
+}) => {
+  const paymentTypes = ["Cash", "Card", "UPI", "Bank Transfer"];
+  const [activePaymentType, setActivePaymentType] = useState(paymentTypes[0]);
 
-const TableHeader = ({ columns }) => {
-  return (
-    <TableRow>
-      {columns.map((column) => (
-        <TableCell
-          key={column.dataKey}
-          align={column.numeric ? "right" : "left"}
-          className={`${
-            column.numeric ? "text-right" : "text-left"
-          } bg-gray-100 ${column.width ? `w-${column.width}` : ""}`}
-        >
-          {column.label}
-        </TableCell>
-      ))}
-    </TableRow>
+  const [paymentDetails, setPaymentDetails] = useState(
+    paymentTypes.reduce((acc, type) => ({ ...acc, [type]: "" }), {})
   );
-};
 
-const TableRowContent = ({ columns, row, onDelete }) => {
+  const handlePaymentTypeSelect = (type) => {
+    setActivePaymentType(type);
+    if (onPaymentTypeChange) {
+      onPaymentTypeChange({ target: { name: "paymentType", value: type } }); // Pass mock event
+    }
+  };
+
+  const handleAmountChange = (e, type) => {
+    const { value } = e.target;
+    setPaymentDetails((prev) => ({
+      ...prev,
+      [type]: value,
+    }));
+  };
+
+  const calculateTotalReceived = () =>
+    Object.values(paymentDetails).reduce(
+      (total, amount) => total + (parseFloat(amount) || 0),
+      0
+    );
+
+  const pendingAmount = totalAmount - calculateTotalReceived();
+
+  const handleSubmit = (e) => {
+    // e.preventDefault();
+    const totalReceived = calculateTotalReceived();
+
+    if (totalReceived !== totalAmount) {
+      alert("Total received amount must match the total bill amount!");
+      return;
+    }
+    onSubmit();
+  };
+
   return (
-    <React.Fragment>
-      {columns.map((column) => (
-        <TableCell
-          key={column.dataKey}
-          align={column.numeric ? "rigth" : "left"}
-          className={`${column.numeric ? "text-right" : "text-left"}`}
-        >
-          {column.dataKey !== "edit" ? (
-            row[column.dataKey]
-          ) : (
-            <IconButton
-              component={Link}
-              to={column.link.replace("_id", row["_id"])}
+    <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-1/3">
+        <h2 className="text-xl font-bold mb-4">Select Payment Type</h2>
+
+        <div className="flex space-x-4 mb-6">
+          {paymentTypes.map((type) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => handlePaymentTypeSelect(type)}
+              className={`py-2 px-4 rounded-lg font-semibold ${
+                activePaymentType === type
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-black"
+              }`}
             >
-              <RiEdit2Fill />
-            </IconButton>
-          )}
-          {column.dataKey !== "delete" ? (
-            <></>
-          ) : (
-            <IconButton component={Link} onClick={() => onDelete(row["_id"])}>
-              <MdDelete />
-            </IconButton>
-          )}
-        </TableCell>
-      ))}
-    </React.Fragment>
+              {type}
+            </button>
+          ))}
+        </div>
+
+        <div>
+          {paymentTypes.map((type) => (
+            <div
+              key={type}
+              className={`mb-4 ${
+                activePaymentType === type ? "block" : "hidden"
+              }`}
+            >
+              <label className="block text-lg font-medium mb-2">
+                Enter {type} Amount:
+              </label>
+              <input
+                type="number"
+                value={paymentDetails[type]}
+                onChange={(e) => handleAmountChange(e, type)}
+                className="w-full p-2 border border-gray-300 rounded"
+                placeholder={`Enter ${type} amount`}
+              />
+            </div>
+          ))}
+
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold">
+              Total Bill Amount: {totalAmount.toFixed(2)}
+            </h3>
+            <h3
+              className={`text-lg font-semibold ${
+                pendingAmount > 0 ? "text-red-500" : "text-green-500"
+              }`}
+            >
+              Pending: {Math.abs(pendingAmount).toFixed(2)}
+            </h3>
+          </div>
+
+          <div className="flex justify-end mt-6 space-x-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="py-2 px-4 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
+            >
+              Cancel
+            </button>
+            <button
+              onSubmit={handleSubmit}
+              type="submit"
+              className="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600"
+              // onClick={onClose}
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
-const VirtuosoTableComponents = {
-  Scroller: React.forwardRef((props, ref) => (
-    <TableContainer component={Paper} {...props} ref={ref} />
-  )),
-  Table: (props) => (
-    <Table {...props} className="border-separate table-fixed" />
-  ),
-  TableHead: React.forwardRef((props, ref) => (
-    <TableHead {...props} ref={ref} />
-  )),
-  TableRow,
-  TableBody: React.forwardRef((props, ref) => (
-    <TableBody {...props} ref={ref} />
-  )),
-};
-
-export { TableHeader, TableRowContent, VirtuosoTableComponents };
+export default PaymentScreen;
