@@ -9,6 +9,7 @@ const openStockRouter = require("./src/stock_inventroy/router");
 const UsersRouter = require("./src/Users/router");
 const http = require("http");
 const { Server } = require("socket.io");
+// const notifiyRouter = require("./src/Notification/router");
 
 const app = express();
 const server = http.createServer(app);
@@ -36,40 +37,10 @@ app.use(purchaserouter);
 app.use(salesRouter(io));
 app.use(openStockRouter);
 app.use(UsersRouter);
-
-app.post("/send", (req, res) => {
-  const message = req.body.message;
-  console.log(message);
-  index.js;
-  io.emit("message", { message });
-  res.status(200).send({
-    message: "Message sent successfully",
-  });
-
-  io.on("connection", (socket) => {
-    console.log("A client Connected");
-    socket.on("disconnect", () => {
-      console.log("Client disconnected");
-    });
-
-    // Emit an event named "TestEvent"
-    // setTimeout(() => {
-    // const alert = {
-    //   itemCode: "ABC123",
-    //   stockLevel: 5,
-    //   message: "Stock for ABC123 is low: 5 units left.",
-    // };
-    //   socket.emit("lowStockAlert", socket); // Emitting directly for testing
-    // }, 3000);
-
-    // socket.on("TestEvent", (data) => {
-    //   console.log("Recived from Client:", data);
-    // });
-  });
-});
+// app.use(notifiyRouter);
 
 server.listen(4000, () => {
+  console.log("====================================");
   console.log("Server Running on 4000.");
+  console.log("====================================");
 });
-
-module.exports = io;
