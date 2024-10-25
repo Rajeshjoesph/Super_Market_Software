@@ -3,6 +3,7 @@ const salesModules = require("./module");
 const stockUpdate = require("../stock_inventroy/module");
 const io = require("../../index");
 const moment = require("moment");
+const { checkStockAndNotify } = require("../utils/stockCheck");
 // bill entry
 const saleBill = async (req, res) => {
   try {
@@ -53,15 +54,16 @@ const saleBill = async (req, res) => {
           "Stock update data:",
           updateStock.stockLevel
         );
-        if (updateStock.stockLevel < 50) {
-          console.log("Stock update data message");
+        // if (updateStock.stockLevel < 50) {
+        //   console.log("Stock update data message");
 
-          io.emit("lowStockAlert", {
-            itemCode: updateStock.itemCode,
-            stockLevel: updateStock.stockLevel,
-            message: `Stock for ${updateStock.itemCode} is low: ${updateStock.stockLevel} units left.`,
-          });
-        }
+        //   io.emit("lowStockAlert", {
+        //     itemCode: updateStock.itemCode,
+        //     stockLevel: updateStock.stockLevel,
+        //     message: `Stock for ${updateStock.itemCode} is low: ${updateStock.stockLevel} units left.`,
+        //   });
+        // }
+        checkStockAndNotify(updateStock.itemCode, updateStock.stockLevel, io);
         console.log(
           `Updated stock for itemCode ${itemCode}: SoildOut by ${qty}`
         );
