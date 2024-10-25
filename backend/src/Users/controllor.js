@@ -108,11 +108,12 @@ const sigin = async (req, res) => {
       });
     }
     return res.status(200).json({
+      data: user,
       message: "Login Sussesfully",
     });
   } catch (err) {
     return res.json({
-      message: err,
+      message: err.message,
     });
   }
 };
