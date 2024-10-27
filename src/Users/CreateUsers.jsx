@@ -30,7 +30,7 @@ const UserForm = [
     title: "Assign Role",
     name: "role",
     dataType: "select",
-    options: ["User", "Admin", "Editor", "Viewer", "Moderator"], // You can add the options here for the dropdown
+    options: ["admin", "inventoryManager", "salesman", "Grn"], // You can add the options here for the dropdown
   },
 ];
 
