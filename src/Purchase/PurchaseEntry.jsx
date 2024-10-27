@@ -10,6 +10,7 @@ import Paper from "@mui/material/Paper";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import CustomAlert from "../Component/AlertBox";
+import PurchaseAcknowleadgePdf from "../utilit/PurchasePdfGenrate";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -228,9 +229,11 @@ const PurchaseEntry = () => {
             setstockDetail(generateDefaultRows());
             setDetail(mainDtl);
             setAlertTitle("Purchase Successful");
+            PurchaseAcknowleadgePdf(res.data.data);
             setAlertMessage(
               res.data.message || "Your purchase was successfully recorded."
             );
+
             setAlertOpen(true);
             console.log(res.data.message);
           }
