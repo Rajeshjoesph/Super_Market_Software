@@ -25,26 +25,10 @@ const PurchaseChart = () => {
       amount: e.totAmt, // Adjust according to your actual data structure
     }));
   };
-  console.log(dailyData());
 
-  const monthlyData = [
-    { month: "01/2024", amount: 1200 },
-    { month: "02/2024", amount: 1500 },
-    { month: "03/2024", amount: 2000 },
-    { month: "04/2024", amount: 1800 },
-    { month: "06/2024", amount: 2200 },
-    { month: "05/2024", amount: 2100 },
-    { month: "07/2024", amount: 2500 },
-    { month: "08/2024", amount: 3000 },
-    { month: "09/2024", amount: 2800 },
-    { month: "10/2024", amount: 1500 },
-  ];
+  const monthlyData = 0;
 
-  const yearlyData = [
-    { year: "2022", amount: 25000 },
-    { year: "2023", amount: 30000 },
-    { year: "2024", amount: 28000 },
-  ];
+  const yearlyData = 0;
 
   const getData = () => {
     switch (view) {
