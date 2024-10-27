@@ -58,7 +58,7 @@ const fontAwesomeIcons = {
 };
 
 const DisplayUsers = () => {
-  const { users, setUsers } = useContext(storeContext);
+  const { noUsers, setNoUsers } = useContext(storeContext);
   // const [users, setUsers] = useState([]);
 
   // useEffect(() => {
@@ -79,7 +79,7 @@ const DisplayUsers = () => {
       .delete(`http://localhost:4000/users/${id}`)
       .then((res) => {
         if (res.status === 200) {
-          setUsers((prev) => prev.filter((item) => item._id !== id));
+          setNoUsers((prev) => prev.filter((item) => item._id !== id));
         }
       })
       .catch((err) => console.log(err));
@@ -122,10 +122,10 @@ const DisplayUsers = () => {
 
   return (
     <>
-      {users.length > 0 ? (
+      {noUsers.length > 0 ? (
         <MaterialReactTable
           columns={columns}
-          data={users}
+          data={noUsers}
           enableColumnOrdering
           enableColumnPinning
           icons={fontAwesomeIcons}
