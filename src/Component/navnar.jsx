@@ -68,8 +68,6 @@ const sidebarData = [
 
 const Navbar = () => {
   const { users } = useContext(storeContext);
-  console.log("navbar", users);
-
   const user = users[0];
   const userRole = user?.role || "";
   // console.log(user);
