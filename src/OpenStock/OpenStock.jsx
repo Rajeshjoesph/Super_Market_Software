@@ -61,7 +61,8 @@ const fontAwesomeIcons = {
 };
 
 const OpenstockDetail = () => {
-  const { openStock, getStock, value } = useContext(storeContext);
+  const { openStock, getStock, value, loading, error } =
+    useContext(storeContext);
   // const [openStock, setopenStock] = useState([]);
 
   useEffect(() => {
@@ -80,7 +81,8 @@ const OpenstockDetail = () => {
 
     []
   );
-
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
   return (
     <div>
       <h1>Inventory Details</h1>
