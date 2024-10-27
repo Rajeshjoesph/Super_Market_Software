@@ -2,18 +2,18 @@ import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { storeContext, ussUser } from "../Context/StoreContext";
 
-const PrivateRouter = ({ children, roles }) => {
+const PrivateRouter = ({ element, roles }) => {
   const { users } = useContext(storeContext);
   const user = users[0];
 
-  if (!user) {
+  if (!user.role) {
     return <Navigate to="/Sigin" />;
   }
-  if (roles && !roles.include(user.roles)) {
+  if (roles && !roles.includes(user.role)) {
     return <Navigate to="/unauthorized" />;
   }
 
-  return children;
+  return element;
 };
 
 export default PrivateRouter;
