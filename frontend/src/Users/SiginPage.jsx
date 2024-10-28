@@ -29,7 +29,10 @@ const SiginPage = () => {
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
-      const SiginApi = await axios.post("http://localhost:4000/sigin", sigin);
+      const SiginApi = await axios.post(
+        "https://inventory-system24in.vercel.app/sigin",
+        sigin
+      );
       if (SiginApi.status === 200) {
         const userData = SiginApi.data.data;
         setUsers([userData]);
