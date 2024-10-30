@@ -2,7 +2,7 @@ const express = require("express");
 const salesControllor = require("./controllor");
 
 const salesRouter = express.Router();
-module.exports = (io) => {
+module.exports = () => {
   salesRouter
     .route("/sales")
     .post(salesControllor.saleBill)
