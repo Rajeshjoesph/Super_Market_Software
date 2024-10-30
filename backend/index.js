@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const connection = require("./src/config/connection");
+// const connection = require("./src/config/connection");
 // const router = require("./src/inventory/router");
 // const purchaserouter = require("./src/Purchase/router");
 // const cors = require("cors");
@@ -31,7 +31,7 @@ app.use(express.json());
 //     methods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
 //   })
 // );
-connection();
+// connection();
 app.get("/", (req, res) => {
   res.json("Hello");
 });
