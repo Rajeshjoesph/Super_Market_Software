@@ -1,12 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const connection = require("./src/config/connection");
-// const router = require("./src/inventory/router");
-// const purchaserouter = require("./src/Purchase/router");
+const router = require("./src/inventory/router");
+const purchaserouter = require("./src/Purchase/router");
 // const cors = require("cors");
-// const salesRouter = require("./src/Sales/router");
-// const openStockRouter = require("./src/stock_inventroy/router");
-// const UsersRouter = require("./src/Users/router");
+const salesRouter = require("./src/Sales/router");
+const openStockRouter = require("./src/stock_inventroy/router");
+const UsersRouter = require("./src/Users/router");
 // const http = require("http");
 // const { Server } = require("socket.io");
 // // const notifiyRouter = require("./src/Notification/router");
@@ -35,11 +35,11 @@ connection();
 app.get("/", (req, res) => {
   res.json("Hello");
 });
-// app.use(router);
-// app.use(purchaserouter);
-// app.use(salesRouter(io));
-// app.use(openStockRouter);
-// app.use(UsersRouter);
+app.use(router);
+app.use(purchaserouter);
+app.use(salesRouter);
+app.use(openStockRouter);
+app.use(UsersRouter);
 // // app.use(notifiyRouter);
 
 app.listen(4000, () => {
