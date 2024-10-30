@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const connection = require("./src/config/connection");
 const router = require("./src/inventory/router");
 const purchaserouter = require("./src/Purchase/router");
-// const cors = require("cors");
+const cors = require("cors");
 const salesRouter = require("./src/Sales/router");
 const openStockRouter = require("./src/stock_inventroy/router");
 const UsersRouter = require("./src/Users/router");
@@ -25,12 +25,12 @@ const app = express();
 // });
 app.use(express.json());
 
-// app.use(
-//   cors({
-//     origin: "http://localhost:3000",
-//     methods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
-//   })
-// );
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
+  })
+);
 connection();
 app.get("/", (req, res) => {
   res.json("Hello");
