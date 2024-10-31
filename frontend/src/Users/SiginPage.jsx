@@ -30,9 +30,7 @@ const SiginPage = () => {
     e.preventDefault();
     try {
       const SiginApi = await axios.post(
-        // "https://inventory-system24in.vercel.app/sigin",
-        "https://inventorysystem-git-main-rajeshjoesphs-projects.vercel.app/sigin",
-        // "http://localhost:4000/sigin",
+        "super-market-software.vercel.app/sigin",
         sigin
       );
       if (SiginApi.status === 200) {
