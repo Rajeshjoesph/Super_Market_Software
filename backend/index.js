@@ -32,9 +32,9 @@ app.use(
   })
 );
 connection();
-// app.get("/", (req, res) => {
-//   res.json("Hello");
-// });
+app.get("/", (req, res) => {
+  res.json("Hello");
+});
 app.use(router);
 app.use(purchaserouter);
 app.use(salesRouter);
