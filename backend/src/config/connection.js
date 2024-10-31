@@ -4,7 +4,7 @@ const { DB_HOST, DB_USER, DB_PASS } = process.env;
 
 const connection = () =>
   mongoose
-    .connect(DB_HOST, { useNewUrlParser: true, useUnifiedTopology: true })
+    .connect(DB_HOST)
     .then(() => {
       console.log("Database connection...");
     })
