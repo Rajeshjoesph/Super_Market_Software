@@ -30,7 +30,7 @@ const SiginPage = () => {
     e.preventDefault();
     try {
       const SiginApi = await axios.post(
-        "super-market-software.vercel.app/sigin",
+        "https://super-market-software.vercel.app/sigin",
         sigin
       );
       if (SiginApi.status === 200) {
