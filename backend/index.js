@@ -27,14 +27,14 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "*",
+    origin: "https://super-market-software-frontend.vercel.app",
     methods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
   })
 );
 connection();
-app.get("/", (req, res) => {
-  res.json("Hello");
-});
+// app.get("/", (req, res) => {
+//   res.json("Hello");
+// });
 app.use(router);
 app.use(purchaserouter);
 app.use(salesRouter);
