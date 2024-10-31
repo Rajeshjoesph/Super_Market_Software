@@ -27,7 +27,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "https://super-market-software-frontend.vercel.app",
+    origin: "https://super-market-software-frontend.vercel.app/",
     methods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
   })
 );
