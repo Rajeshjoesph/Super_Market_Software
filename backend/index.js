@@ -44,12 +44,12 @@ const allowedOrigins = [
 //   })
 // );
 
-// app.use(
-//   cors({
-//     origin: "https://super-market-software-frontend.vercel.app",
-//     methods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
-//   })
-// );
+app.use(
+  cors({
+    origin: "https://super-market-software-frontend.vercel.app",
+    methods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
+  })
+);
 connection();
 app.get("/", (req, res) => {
   res.json("Hello");
