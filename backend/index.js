@@ -24,13 +24,32 @@ const app = express();
 //   next();
 // });
 app.use(express.json());
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://super-market-software-frontend.vercel.app",
+];
 
 app.use(
   cors({
-    origin: "https://super-market-software-frontend.vercel.app/",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );
+
+// app.use(
+//   cors({
+//     origin: "https://super-market-software-frontend.vercel.app",
+//     methods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
+//   })
+// );
 connection();
 app.get("/", (req, res) => {
   res.json("Hello");
