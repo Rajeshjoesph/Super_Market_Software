@@ -31,7 +31,6 @@ const SiginPage = () => {
     try {
       const SiginApi = await axios.post(
         "https://super-market-software-backend.vercel.app/sigin",
-
         sigin
       );
       if (SiginApi.status === 200) {
