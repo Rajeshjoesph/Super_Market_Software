@@ -46,8 +46,10 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: "https://super-market-software-frontend.vercel.app",
-    methods: ["OPTIONS", "GET", "POST", "PUT", "DELETE"],
+    origin: "https://super-market-software-frontend.vercel.app", // Replace with your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"], // Add any other headers you need
+    credentials: true, // If you need to include cookies
   })
 );
 connection();
