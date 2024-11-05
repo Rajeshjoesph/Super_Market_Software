@@ -95,6 +95,8 @@ const updateUserDetail = async (req, res) => {
 
 const sigin = async (req, res) => {
   try {
+    console.log(req.body);
+
     const { email, password } = req.body;
 
     // const user = await Users.find({ email, password });
