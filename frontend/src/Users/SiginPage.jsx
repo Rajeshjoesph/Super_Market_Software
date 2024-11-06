@@ -25,12 +25,12 @@ const SiginPage = () => {
     localStorage.removeItem("user"); // Clear user data on sign-out
     setUsers([]); // Clear context state
   };
-  axios.defaults.withCredentials = true;
+  // axios.defaults.withCredentials = true;
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
       const SiginApi = await axios.post(
-        "super-market-software-backend-git-main-rajeshjoesphs-projects.vercel.app/sigin",
+        "https://super-market-software-backend-9elw4hhkt-rajeshjoesphs-projects.vercel.app/sigin",
         sigin
       );
       if (SiginApi.status === 200) {
