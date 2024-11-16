@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { storeContext } from "../Context/StoreContext";
 import { Player } from "lottie-react";
 import loginAnimation from "../Pubilc/gifs/Tabletlogin.gif";
+const { FRONTEND_URL } = process.env;
 
 const SiginPage = () => {
   const initstate = {
@@ -29,10 +30,7 @@ const SiginPage = () => {
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
-      const SiginApi = await axios.post(
-        "https://super-market-software-backend-9elw4hhkt-rajeshjoesphs-projects.vercel.app/sigin",
-        sigin
-      );
+      const SiginApi = await axios.post("FRONTEND_URL/sigin", sigin);
       if (SiginApi.status === 200) {
         const userData = SiginApi.data.data;
         setUsers([userData]);
