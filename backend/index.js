@@ -9,10 +9,11 @@ const openStockRouter = require("./src/stock_inventroy/router");
 const UsersRouter = require("./src/Users/router");
 const http = require("http");
 const { Server } = require("socket.io");
-const { RUNNING_URL } = process.env;
+const { RUNNING_URL, PORT_URL } = process.env;
 // const notifiyRouter = require("./src/Notification/router");
 
 const app = express();
+const port = PORT_URL || 4000;
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -40,7 +41,7 @@ app.use(openStockRouter);
 app.use(UsersRouter);
 // app.use(notifiyRouter);
 
-server.listen(4000, () => {
+server.listen(port, () => {
   console.log("====================================");
   console.log("Server Running on 4000.");
   console.log("====================================");
